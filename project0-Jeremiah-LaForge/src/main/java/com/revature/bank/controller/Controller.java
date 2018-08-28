@@ -10,17 +10,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.revature.bank.account.Account;
 import com.revature.bank.user.User;
 
 public class Controller {
-
-	static private HashSet<String> userNameSet = new HashSet<String>();
-	static private HashMap<String, String> psWrd = new HashMap<String, String>();
+	
+	private static HashSet<String> userNameSet = new HashSet<String>();
+	private static HashMap<String, String> psWrd = new HashMap<String, String>(); //doesn't get used, how will passwrds be used?
 	private static final String FILENAME = "resources\\accountDB.txt";
-
-	public static HashSet<String> getUserNameSet() {
+	private static Logger log = Logger.getRootLogger();
+	
+	private Controller() {
+		super();
+	}
+	
+	public static Set<String> getUserNameSet() {
 		return userNameSet;
 	}
 
@@ -65,6 +73,7 @@ public class Controller {
 	}
 
 	public static Account loadAccount(String uName, String psword) {
+		//TODO re-factor to pull from database instead
 
 		Scanner console = new Scanner(System.in);
 
@@ -76,8 +85,7 @@ public class Controller {
 		try {
 			br = new BufferedReader(new FileReader(FILENAME));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("File was not found.", e);
 		}
 
 		try {
@@ -85,7 +93,6 @@ public class Controller {
 			try {
 				line = br.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			while (line != null) {
@@ -97,7 +104,6 @@ public class Controller {
 				try {
 					line = br.readLine();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -126,26 +132,19 @@ public class Controller {
 			try {
 				br.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		}
-
-//		User user = new User(uName, fName, lName, psWord);
-//		Account account = new Account(user, bal);
-
-//		console.close();
-
 		return null;
 	}
 
 	public static Account retrieveAccount(String uName, String fName, String lName, String psWord, long bal) {
 
 		User user = new User(uName, fName, lName, psWord);
-		Account account = new Account(user, bal);
+		
+		return new Account(user, bal);
 
-		return account;
 	}
 
 	public static boolean withdrawl(long withdrawl, Account account) {

@@ -23,7 +23,13 @@ public class User {
 		this.psWord = psWord;
 	}
 	
-	
+	public String getPsWord() {
+		return psWord;
+	}
+
+	public void setPsWord(String psWord) {
+		this.psWord = psWord;
+	}
 
 	public String getUserName() {
 		return userName;

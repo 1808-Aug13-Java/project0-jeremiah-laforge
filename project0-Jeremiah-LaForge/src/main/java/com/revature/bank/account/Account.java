@@ -1,32 +1,31 @@
 package com.revature.bank.account;
 
-import com.revature.bank.user.User;
 /*
  * 
  */
 public class Account {
 	
-	private User user;
+	private String userName;
 	private long ballance;
 
 	public Account() {
 		super();
-		user = new User();
 		ballance = 0L;
+		userName = null;
 	}
 
-	public Account(User user, long ballance) {
+	public Account(String userName, long ballance) {
 		super();
-		this.user = user;
+		this.userName = userName;
 		this.ballance = ballance;
 	}
 
-	public User getUser() {
-		return user;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUser(String userName) {
+		this.userName = userName;
 	}
 
 	public long getBallance() {
@@ -42,7 +41,7 @@ public class Account {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (ballance ^ (ballance >>> 32));
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
 		return result;
 	}
 
@@ -57,17 +56,19 @@ public class Account {
 		Account other = (Account) obj;
 		if (ballance != other.ballance)
 			return false;
-		if (user == null) {
-			if (other.user != null)
+		if (userName == null) {
+			if (other.userName != null)
 				return false;
-		} else if (!user.equals(other.user))
-			return false;
+		} else if (!userName.equals(other.userName)) {
+			return false;}
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return user + ":"+ ballance + "\n";
+		return "Account [userName=" + userName + ", ballance=" + ballance + "]";
 	}
 
+	
+	
 }
