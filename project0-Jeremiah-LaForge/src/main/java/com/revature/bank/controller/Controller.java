@@ -147,4 +147,10 @@ public class Controller {
 		}
 		return acc;
 	}
+	
+	public static int deleteUser(String userName) {
+		
+		UserDAO userDI = new UserDaoImp();
+		return userDI.deletUserByName(userName);
+	}
 }

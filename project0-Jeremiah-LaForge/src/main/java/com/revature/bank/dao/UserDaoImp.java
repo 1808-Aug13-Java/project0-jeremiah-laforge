@@ -53,7 +53,7 @@ public class UserDaoImp implements UserDAO {
 
 		return userList;
 	}
-
+	
 	@Override
 	public User getUserByName(String name) {
 		String sql = "SELECT * FROM BANK_USER WHERE USER_NAME = ?";
@@ -123,7 +123,7 @@ public class UserDaoImp implements UserDAO {
 
 		return user;
 	}
-
+	
 	@Override
 	public int createUser(User user) {
 		String sql = "INSERT INTO BANK_USER (USER_NAME, FNAME, LNAME, PSWD) VALUES (?, ?, ?, ?) ";
@@ -172,7 +172,8 @@ public class UserDaoImp implements UserDAO {
 
 	/*
 	 * (non-Javadoc)
-	 * This calls a stored procedure to delete the user. On cascade should delete the associated bank account as well
+	 * This calls a stored procedure to delete the user. 
+	 * On cascade should delete the associated bank account as well
 	 * @see com.revature.bank.dao.UserDAO#deletUserByName(java.lang.String)
 	 */
 	@Override

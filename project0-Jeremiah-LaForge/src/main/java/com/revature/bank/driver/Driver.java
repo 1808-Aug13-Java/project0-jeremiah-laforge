@@ -53,6 +53,7 @@ public class Driver {
 		log.info("logged out successfully");
 
 		console.close();
+		
 	}
 
 }

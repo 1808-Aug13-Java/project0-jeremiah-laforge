@@ -19,6 +19,7 @@ public class View {
 		super();
 	}
 
+	
 	public static boolean createView() {
 		ArrayList<String> accountCreate = new ArrayList<>();
 		String input = null;
@@ -48,8 +49,9 @@ public class View {
 			input = console.nextLine();
 		}
 		accountCreate.add(input);
-		log.info("Enter your password. Letters are case sensitive, and adding numbers is recomended. No special characters "+
-		"are allowed. Strong passwords have length greater than 14.");
+		log.info(
+				"Enter your password. Letters are case sensitive, and adding numbers is recomended. No special characters "
+						+ "are allowed. Strong passwords have length greater than 14.");
 		input = console.nextLine();
 		while (!input.matches("^[a-zA-Z0-9]*$")) {
 			log.info("Invalid input. Please enter a valid user name");
@@ -57,8 +59,13 @@ public class View {
 		}
 		accountCreate.add(input);
 
-		log.info("What will be your initial deposit? Enter only digits.");
-		accountCreate.add(console.nextLine());
+		log.info("What will be your initial deposit?"
+				+ " Enter a numeric value greater than 0.01 in the format 0.00 to make deposit.");
+		while (!input.matches("^\\d+\\.\\d{0,2}$") || (Double.parseDouble(input) <= 0.01)) {
+			log.info("Invalid input. Please enter a valid number to deposit.");
+			input = console.nextLine();
+		}
+		accountCreate.add(input);
 
 		Account newAcc = Controller.createAccount(accountCreate.get(0), accountCreate.get(1), accountCreate.get(2),
 				accountCreate.get(3), Double.parseDouble(accountCreate.get(4)));
@@ -85,7 +92,8 @@ public class View {
 		String input = null;
 		boolean withdrawal = false;
 
-		log.info("To log out type \"exit\". Type \"withdrawal\" to make a withdrawal, or \"deposit\" to make a deposit.");
+		log.info(
+				"To log out type \"exit\". Type \"withdrawal\" to make a withdrawal, or \"deposit\" to make a deposit.");
 		input = console.nextLine();
 		if (input.equalsIgnoreCase("exit")) {
 			return false;
@@ -101,7 +109,8 @@ public class View {
 				log.info("Withdrawal successful. New Ballance: " + df2.format(acc.getBallance()));
 				return true;
 			} else {
-				log.info("Withdrawal failed. Current Ballance: " + df2.format(acc.getBallance()) + " amount requested: " + input);
+				log.info("Withdrawal failed. Current Ballance: " + df2.format(acc.getBallance()) + " amount requested: "
+						+ input);
 				return true;
 			}
 		} else if (input.equalsIgnoreCase("deposit")) {
@@ -116,7 +125,8 @@ public class View {
 				log.info("Deposit successful. New Ballance: " + df2.format(acc.getBallance()));
 				return true;
 			} else {
-				log.info("Deposit failed. Current Ballance: " + df2.format(acc.getBallance()) + " amount requested: " + input);
+				log.info("Deposit failed. Current Ballance: " + df2.format(acc.getBallance()) + " amount requested: "
+						+ input);
 				return true;
 			}
 		} else {
