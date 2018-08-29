@@ -46,7 +46,7 @@ public class Controller {
 				isNameAvailable = true;
 			}
 		}
-
+		//
 		Account newAcc = new Account(uName, bal);
 		User newUser = new User(uName, fName, lName, psWord);
 
