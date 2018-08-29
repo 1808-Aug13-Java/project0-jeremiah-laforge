@@ -35,8 +35,8 @@ public class Account {
 	public void setBallance(double ballance) {
 		this.ballance = ballance;
 	}
-
 	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -62,9 +62,8 @@ public class Account {
 		if (userName == null) {
 			if (other.userName != null)
 				return false;
-		} else if (!userName.equals(other.userName)) {
+		} else if (!userName.equals(other.userName))
 			return false;
-		}
 		return true;
 	}
 

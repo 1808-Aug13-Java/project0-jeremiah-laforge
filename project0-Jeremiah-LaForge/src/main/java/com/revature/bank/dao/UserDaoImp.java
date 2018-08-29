@@ -191,4 +191,42 @@ public class UserDaoImp implements UserDAO {
 		return rowsDeleted;
 	}
 
+	@Override
+	public int createUser(User user, Connection con) {
+		String sql = "INSERT INTO BANK_USER (USER_NAME, FNAME, LNAME, PSWD) VALUES (?, ?, ?, ?) ";
+		int userCreated = 0;
+
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setString(1, user.getUserName());
+			ps.setString(2, user.getfName());
+			ps.setString(3, user.getlName());
+			ps.setString(4, user.getPsWord());
+			userCreated = ps.executeUpdate();
+
+		} catch (SQLException e) {
+			log.error(SQLIOERR, e);
+		}
+		return userCreated;
+	}
+
+	@Override
+	public int updateAccount(User user, Connection con) {
+		int userUpdated = 0;
+
+		String sql = "UPDATE BANK_USER " + "SET FNAME = ?," + " LNAME = ?," + " PSWD = ?" + "WHERE USER_NAME = ?";
+
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setString(1, user.getfName());
+			ps.setString(2, user.getlName());
+			ps.setString(3, user.getPsWord());
+			ps.setString(4, user.getUserName());
+			userUpdated = ps.executeUpdate();
+
+		} catch (SQLException e) {
+			log.error(SQLIOERR, e);
+		}
+
+		return userUpdated;
+	}
+
 }

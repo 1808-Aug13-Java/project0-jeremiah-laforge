@@ -12,6 +12,8 @@ public interface AccountDAO {
 	public Account getAccountByUser(String name);
 	public Account getAccountByUser(String name, Connection con);
 	public int createAccount(Account account);
+	public int createAccount(Account account, Connection con);
 	public int updateAccount(Account account);
+	public int updateAccount(Account account, Connection con);
 	public int deleteAccountByUser(String name);	
 }

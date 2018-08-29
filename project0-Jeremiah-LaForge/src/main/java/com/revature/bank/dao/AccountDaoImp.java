@@ -179,4 +179,39 @@ public class AccountDaoImp implements AccountDAO {
 		return rowsDeleted;
 	}
 
+	@Override
+	public int createAccount(Account account, Connection con) {
+		String sql = "INSERT INTO ACCOUNT (USER_NAME, BALLANCE) VALUES (?, ?) ";
+		int accCreated = 0;
+
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setString(1, account.getUserName());
+			ps.setDouble(2, account.getBallance());
+			accCreated = ps.executeUpdate();
+
+		} catch (SQLException e) {
+			log.error(SQLIOERR, e);
+		}
+		return accCreated;
+	}
+
+	@Override
+	public int updateAccount(Account account, Connection con) {
+		int accUpdated = 0;
+
+		String sql = "UPDATE ACCOUNT " + "SET USER_NAME = ?," + " BALLANCE = ?" +" WHERE USER_NAME = ?";
+
+		try (PreparedStatement ps = con.prepareStatement(sql);) {
+			ps.setString(1, account.getUserName());
+			ps.setDouble(2, account.getBallance());
+			ps.setString(3, account.getUserName());
+			accUpdated = ps.executeUpdate();
+
+		} catch (SQLException e) {
+			log.error(SQLIOERR, e);
+		}
+
+		return accUpdated;
+	}
+
 }

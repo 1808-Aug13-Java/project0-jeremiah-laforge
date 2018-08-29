@@ -13,7 +13,9 @@ public interface UserDAO {
 	public User getUserByName(String name);
 	public User getUserByName(String name, Connection con);
 	public int createUser(User user);
+	public int createUser(User user, Connection con);
 	public int updateAccount(User user);
+	public int updateAccount(User user, Connection con);
 	public int deletUserByName(String name);	
 	
 }

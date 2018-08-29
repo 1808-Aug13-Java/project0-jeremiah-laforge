@@ -1,5 +1,6 @@
 package com.revature.bank.view;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,6 +13,7 @@ public class View {
 
 	private static Scanner console = new Scanner(System.in);
 	private static Logger log = Logger.getRootLogger();
+	private static DecimalFormat df2 = new DecimalFormat(".##");
 
 	private View() {
 		super();
@@ -88,33 +90,33 @@ public class View {
 		if (input.equalsIgnoreCase("exit")) {
 			return false;
 		} else if (input.equalsIgnoreCase("withdrawal")) {
-			log.info("Enter a numeric value greater than 0 to make withdrawl.");
+			log.info("Enter a numeric value greater than 0.01 in the format 0.00 to make withdrawl.");
 			input = console.nextLine();
-			while (!input.matches("^[0-9.]*$")) {
+			while (!input.matches("^\\d+\\.\\d{0,2}$") || (Double.parseDouble(input) <= 0.01)) {
 				log.info("Invalid input. Please enter a valid number to withdrawal.");
 				input = console.nextLine();
 			}
 			withdrawal = Controller.withdrawal(Double.parseDouble(input), acc);
 			if (withdrawal) {
-				log.info("Withdrawal successful. New Ballance: " + acc.getBallance());
+				log.info("Withdrawal successful. New Ballance: " + df2.format(acc.getBallance()));
 				return true;
 			} else {
-				log.info("Withdrawal failed. Current Ballance: " + acc.getBallance() + " amount requested: " + input);
+				log.info("Withdrawal failed. Current Ballance: " + df2.format(acc.getBallance()) + " amount requested: " + input);
 				return true;
 			}
 		} else if (input.equalsIgnoreCase("deposit")) {
-			log.info("Enter a numeric value greater than 0 to make deposit.");
+			log.info("Enter a numeric value greater than 0.01 in the format 0.00 to make deposit.");
 			input = console.nextLine();
-			while (!input.matches("^[0-9.]*$")) {
+			while (!input.matches("^\\d+\\.\\d{0,2}$") || (Double.parseDouble(input) <= 0.01)) {
 				log.info("Invalid input. Please enter a valid number to deposit.");
 				input = console.nextLine();
 			}
 
 			if (Controller.deposit(Double.parseDouble(input), acc)) {
-				log.info("Deposit successful. New Ballance: " + acc.getBallance());
+				log.info("Deposit successful. New Ballance: " + df2.format(acc.getBallance()));
 				return true;
 			} else {
-				log.info("Deposit failed. Current Ballance: " + acc.getBallance() + " amount requested: " + input);
+				log.info("Deposit failed. Current Ballance: " + df2.format(acc.getBallance()) + " amount requested: " + input);
 				return true;
 			}
 		} else {
