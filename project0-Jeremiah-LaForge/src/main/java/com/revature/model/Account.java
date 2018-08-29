@@ -1,4 +1,4 @@
-package com.revature.bank.account;
+package com.revature.model;
 
 /*
  * 
@@ -6,15 +6,15 @@ package com.revature.bank.account;
 public class Account {
 	
 	private String userName;
-	private long ballance;
+	private double ballance;
 
 	public Account() {
 		super();
-		ballance = 0L;
+		ballance = 0;
 		userName = null;
 	}
 
-	public Account(String userName, long ballance) {
+	public Account(String userName, double ballance) {
 		super();
 		this.userName = userName;
 		this.ballance = ballance;
@@ -28,19 +28,22 @@ public class Account {
 		this.userName = userName;
 	}
 
-	public long getBallance() {
+	public double getBallance() {
 		return ballance;
 	}
 
-	public void setBallance(long ballance) {
+	public void setBallance(double ballance) {
 		this.ballance = ballance;
 	}
 
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (ballance ^ (ballance >>> 32));
+		long temp;
+		temp = Double.doubleToLongBits(ballance);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
 		return result;
 	}
@@ -54,13 +57,14 @@ public class Account {
 		if (getClass() != obj.getClass())
 			return false;
 		Account other = (Account) obj;
-		if (ballance != other.ballance)
+		if (Double.doubleToLongBits(ballance) != Double.doubleToLongBits(other.ballance))
 			return false;
 		if (userName == null) {
 			if (other.userName != null)
 				return false;
 		} else if (!userName.equals(other.userName)) {
-			return false;}
+			return false;
+		}
 		return true;
 	}
 

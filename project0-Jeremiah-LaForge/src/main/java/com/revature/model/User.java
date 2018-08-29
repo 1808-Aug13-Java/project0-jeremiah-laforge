@@ -1,4 +1,4 @@
-package com.revature.bank.user;
+package com.revature.model;
 
 public class User {
 

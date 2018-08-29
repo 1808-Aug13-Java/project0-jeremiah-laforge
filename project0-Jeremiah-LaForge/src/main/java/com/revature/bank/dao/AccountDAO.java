@@ -3,7 +3,7 @@ package com.revature.bank.dao;
 import java.sql.Connection;
 import java.util.List;
 
-import com.revature.bank.account.Account;
+import com.revature.model.Account;
 
 
 public interface AccountDAO {

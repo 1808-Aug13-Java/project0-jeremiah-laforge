@@ -1,263 +1,151 @@
 package com.revature.bank.controller;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.revature.bank.account.Account;
-import com.revature.bank.user.User;
+import com.revature.model.Account;
+import com.revature.model.User;
+import com.revature.bank.dao.*;
+import com.revature.bank.view.*;
 
 public class Controller {
-	
-	private static HashSet<String> userNameSet = new HashSet<String>();
-	private static HashMap<String, String> psWrd = new HashMap<String, String>(); //doesn't get used, how will passwrds be used?
-	private static final String FILENAME = "resources\\accountDB.txt";
+
+	private static Set<String> userNameSet = new HashSet<>();
 	private static Logger log = Logger.getRootLogger();
-	
+	private static Scanner console = new Scanner(System.in);
+
+	private static void loadUsers() {
+		UserDaoImp userDI = new UserDaoImp();
+		for (User u : userDI.getUsers()) {
+			userNameSet.add(u.getUserName());
+		}
+	}
+
 	private Controller() {
 		super();
 	}
-	
-	public static Set<String> getUserNameSet() {
-		return userNameSet;
-	}
 
-	public static void addUserNameSet(String userName) {
-		userNameSet.add(userName);
-	}
-
-	public static HashMap<String, String> getPsWrd() {
-		return psWrd;
-	}
-
-	public static void putPsWrd(String userName, String passWrd) {
-		psWrd.put(passWrd, userName);
-	}
-
-	public static Account createAccount(String uName, String fName, String lName, String psWord, long bal) {
+	public static Account createAccount(String uName, String fName, String lName, String psWord, double bal) {
 
 		Scanner console = new Scanner(System.in);
+		loadUsers();
 		int setSize = userNameSet.size();
-		boolean isAccCreated = false;
+		boolean isNameAvailable = false;
+		userNameSet.add(uName);
 
-		while (!isAccCreated) {
-			userNameSet.add(uName);
+		while (!isNameAvailable) {
 			if (userNameSet.size() == setSize) {
-				System.out.println("That user name has already been taken. Please enter a different user name.");
-				console = new Scanner(System.in);
+				log.info("That user name has already been taken. Please enter a different user name.");
 				uName = console.nextLine();
 				userNameSet.add(uName);
 			}
 			if (userNameSet.size() != setSize) {
-				isAccCreated = true;
+				isNameAvailable = true;
 			}
 		}
 
-		User user = new User(uName, fName, lName, psWord);
-		Account account = new Account(user, bal);
+		Account newAcc = new Account(uName, bal);
+		User newUser = new User(uName, fName, lName, psWord);
 
-		System.out.println("New account created: " + account.toString());
-//		console.close();
-
-		return account;
-	}
-
-	public static Account loadAccount(String uName, String psword) {
-		//TODO re-factor to pull from database instead
-
-		Scanner console = new Scanner(System.in);
-
-		BufferedReader br = null;
-		boolean password = false;
-		boolean userFound = false;
-		int userIndex;
-		ArrayList<String> accInfoRead = new ArrayList<String>();
-		try {
-			br = new BufferedReader(new FileReader(FILENAME));
-		} catch (FileNotFoundException e) {
-			log.error("File was not found.", e);
+		UserDAO userDI = new UserDaoImp();
+		AccountDAO accDI = new AccountDaoImp();
+		int accCreated = 0;
+		int userCreated = userDI.createUser(newUser);
+		if (userCreated > 0) {
+			accCreated = accDI.createAccount(newAcc);
 		}
-
-		try {
-			String line = null;
-			try {
-				line = br.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			while (line != null) {
-
-				String[] accountInfo = line.split(":");
-				for (String s : accountInfo) {
-					accInfoRead.add(s);
-				}
-				try {
-					line = br.readLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			while (!userFound) {
-				if (accInfoRead.contains(uName)) {
-					userFound = true;
-					userIndex = accInfoRead.indexOf(uName);
-					while (!password) {
-						if (!accInfoRead.get(userIndex + 3).equals(psword)) {
-							System.out.println("Invalid password. Please try again. " + psword);
-							psword = console.nextLine();
-						} else {
-							password = true;
-						}
-					}
-//					console.close();
-					return retrieveAccount(accInfoRead.get(userIndex), accInfoRead.get(userIndex + 1),
-							accInfoRead.get(userIndex + 2), accInfoRead.get(userIndex + 3),
-							Long.parseLong(accInfoRead.get(userIndex + 4)));
-
-				} else {
-					System.out.println("User does not exist");
-				}
-			}
-		} finally {
-			try {
-				br.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+		if (accCreated > 0) {
+			log.info("New account created: " + newAcc.toString());
+		} else {
+			log.info("Account failed to be created.");
+			return null;
 		}
-		return null;
+		return newAcc;
 	}
 
-	public static Account retrieveAccount(String uName, String fName, String lName, String psWord, long bal) {
-
-		User user = new User(uName, fName, lName, psWord);
-		
-		return new Account(user, bal);
-
+	public static Account loadAccount(String uName) {
+		AccountDAO accDI = new AccountDaoImp();
+		return accDI.getAccountByUser(uName);
 	}
 
-	public static boolean withdrawl(long withdrawl, Account account) {
+	public static boolean withdrawal(double withdrawal, Account account) {
 
-		if (withdrawl > account.getBallance()) {
+		if (withdrawal > account.getBallance()) {
+			log.info("withdrawal failed; You requested an amount greater than your account ballance. Your ballance: "
+					+ account.getBallance() + " Amount requested: " + withdrawal);
+			return false;
+		}else if(withdrawal < 0) {
+			log.info("withdrawal failed; You requested a negative number to withdrawal. Your ballance: "
+					+ account.getBallance() + " Amount requested: " + withdrawal);
 			return false;
 		}
-		account.setBallance(account.getBallance() - withdrawl);
-		return true;
+		account.setBallance(account.getBallance() - withdrawal);
+		AccountDAO accDI = new AccountDaoImp();
+		int accUpdated = accDI.updateAccount(account);
+		if (accUpdated > 0) {
+			return true;
+		}
+		log.info("withdrawal failed.");
+		return false;
 	}
 
-	public static boolean deposit(long deposit, Account account) {
-
+	public static boolean deposit(double deposit, Account account) {
+		
+		if(deposit < 0) {
+			log.info("Deposit failed; You requested a negative number to deposit. Your ballance: "
+					+ account.getBallance() + " Amount requested: " + deposit);
+			return false;
+		}
 		account.setBallance(account.getBallance() + deposit);
 		return true;
 	}
 
-	public static boolean saveAccount(Account a) {
-
-		BufferedWriter bw = null;
-		FileWriter fw = null;
-
-		try {
-			fw = new FileWriter(FILENAME, true);
-			bw = new BufferedWriter(fw);
-			bw.write(a.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (bw != null)
-					bw.close();
-				if (fw != null)
-					fw.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+	public static boolean logIn(String userName) {
+		loadUsers();
+		Account acc = null;
+		while (userName == null) {
+			log.info("No user name entered. Please enter a user name.");
+			userName = console.nextLine();
 		}
-		return false;
-	}
-
-	public static boolean updateAccount(Account a) {
-
-		BufferedWriter bw = null;
-		FileWriter fw = null;
-		BufferedReader br = null;
-		int c = 0;
-
-		ArrayList<String> accInfoRead = new ArrayList<String>();
-		try {
-			br = new BufferedReader(new FileReader(FILENAME));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			String line = null;
-			try {
-				line = br.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
+		if (userNameSet.contains(userName)) {
+			acc = validate(userName);
+			if (acc != null) {
+				log.info("logged in successfully as: " + acc.toString());
+				return true;
 			}
-			while (line != null) {
-
-				String[] accountInfo = line.split("\n");
-				for (String s : accountInfo) {
-					accInfoRead.add(s + "\n");
-					c++;
-					if (s.substring(0, a.getUser().getUserName().length()).equals(a.getUser().getUserName())) {
-						accInfoRead.remove(c - 1);
-						accInfoRead.add(c - 1, a.toString());
-						;
+		} else {
+			while (!userNameSet.contains(userName)) {
+				log.info("User name not found. Please enter your user name again."
+						+ " If you do not have an account,\n then type \"create\" to create a new account.");
+				userName = console.nextLine();
+				if (userName.equalsIgnoreCase("create")) {
+					return View.createView();
+				}
+				if (userNameSet.contains(userName)) {
+					acc = validate(userName);
+					if (acc != null) {
+						log.info("logged in successfully as: " + acc.toString());
+						return true;
 					}
 				}
-				try {
-					line = br.readLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		} finally {
-			try {
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		try {
-			fw = new FileWriter(FILENAME);
-			bw = new BufferedWriter(fw);
-			for (String s : accInfoRead) {
-				bw.write(s);
-			}
-			System.out.println("account updated");
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (bw != null)
-					bw.close();
-				if (fw != null)
-					fw.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
 			}
 		}
 		return false;
 	}
 
-	public static boolean logIn(String userName, String passWord) {
-		return false;
+	public static Account validate(String userName) {
+		UserDAO user = new UserDaoImp();
+		Account acc = null;
+		String pswd = null;
+		
+		log.info("Enter your password.");
+		pswd = console.nextLine();
+		if(user.getUserByName(userName).getPsWord().equals(pswd)) {
+			acc = loadAccount(userName);
+		}
+		return acc;
 	}
-
 }

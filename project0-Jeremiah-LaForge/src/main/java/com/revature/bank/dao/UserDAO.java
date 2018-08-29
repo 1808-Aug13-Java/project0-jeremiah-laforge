@@ -2,13 +2,14 @@ package com.revature.bank.dao;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Set;
 
-import com.revature.bank.user.User;
+import com.revature.model.User;
 
 
 public interface UserDAO {
 
-	public List<User> getUsers();
+	public Set<User> getUsers();
 	public User getUserByName(String name);
 	public User getUserByName(String name, Connection con);
 	public int createUser(User user);

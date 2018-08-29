@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.revature.bank.account.Account;
 import com.revature.bank.util.*;
+import com.revature.model.Account;
 
 public class AccountDaoImp implements AccountDAO {
 
@@ -37,7 +37,6 @@ public class AccountDaoImp implements AccountDAO {
 
 				String userName = rs.getString(USERNAME);
 				acc.setUser(userName);
-				;
 
 				long ballance = rs.getLong(BALLANCE);
 				acc.setBallance(ballance);
@@ -69,7 +68,7 @@ public class AccountDaoImp implements AccountDAO {
 				String userName = rs.getString(USERNAME);
 				acc.setUser(userName);
 
-				long ballance = rs.getLong(BALLANCE);
+				double ballance = rs.getDouble(BALLANCE);
 				acc.setBallance(ballance);
 			}
 
@@ -96,7 +95,7 @@ public class AccountDaoImp implements AccountDAO {
 
 		try (Connection con = ConnectionUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setString(1, account.getUserName());
-			ps.setLong(2, account.getBallance());
+			ps.setDouble(2, account.getBallance());
 			accCreated = ps.executeUpdate();
 
 		} catch (SQLException | IOException e) {
@@ -110,11 +109,12 @@ public class AccountDaoImp implements AccountDAO {
 
 		int accUpdated = 0;
 
-		String sql = "UPDATE ACCOUNT " + "SET USER_NAME = ?," + " BALLANCE = ?" + "WHERE USER_NAME = ?";
+		String sql = "UPDATE ACCOUNT " + "SET USER_NAME = ?," + " BALLANCE = ?" +" WHERE USER_NAME = ?";
 
 		try (Connection con = ConnectionUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql);) {
 			ps.setString(1, account.getUserName());
-			ps.setLong(2, account.getBallance());
+			ps.setDouble(2, account.getBallance());
+			ps.setString(3, account.getUserName());
 			accUpdated = ps.executeUpdate();
 
 		} catch (SQLException | IOException e) {
@@ -146,7 +146,7 @@ public class AccountDaoImp implements AccountDAO {
 			}
 
 		} catch (SQLException e) {
-			log.error(SQLIOERR, e);
+			log.error(SQLIOERR + " Be sure your user name is typed correctly.");
 		} finally {
 			try {
 				if (rs != null) {
@@ -163,7 +163,6 @@ public class AccountDaoImp implements AccountDAO {
 	@Override
 	public int deleteAccountByUser(String name) {
 
-		
 		int rowsDeleted = 0;
 
 		String sql = "DELETE FROM ACCOUNT WHERE USER_NAME = ?";
