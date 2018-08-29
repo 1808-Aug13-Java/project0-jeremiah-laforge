@@ -1,8 +1,6 @@
 package com.revature.model;
 
-/*
- * 
- */
+
 public class Account {
 	
 	private String userName;
@@ -62,8 +60,9 @@ public class Account {
 		if (userName == null) {
 			if (other.userName != null)
 				return false;
-		} else if (!userName.equals(other.userName))
+		} else if (!userName.equals(other.userName)) {
 			return false;
+		}
 		return true;
 	}
 
